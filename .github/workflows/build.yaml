@@ -86,3 +86,4 @@ jobs:
           artifacts: /tmp/${{ env.EXE_NAME }}*
           artifactErrorsFailBuild: true
           allowUpdates: true
+          makeLatest: true
