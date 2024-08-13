@@ -85,4 +85,4 @@ jobs:
           name: "${{ steps.tag.outputs.value }}"
           artifacts: /tmp/${{ env.EXE_NAME }}*
           artifactErrorsFailBuild: true
-          allow-updates: true
+          allowUpdates: true
