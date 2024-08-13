@@ -5,10 +5,8 @@ env:
   EXE_NAME: gen-anoma-keys
 
 jobs:
-  build:
+  build-macos-aarch64:
     runs-on: macos-latest
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -20,11 +18,61 @@ jobs:
 
       - name: create release tarball
         run: |
-          tar zcf ${{ env.EXE_NAME }}_macos-aarch64.tar.gz -C target/release ${{ env.EXE_NAME }}
+          tar zcf ${{ env.EXE_NAME }}-macos-aarch64.tar.gz -C target/release ${{ env.EXE_NAME }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos-aarch64-binary
+          path: ${{ env.EXE_NAME }}-macos-aarch64.tar.gz
+          if-no-files-found: error
+
+  build-linux-x86_64-musl:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - run: sudo apt install musl-tools
+
+      - name: Setup Rust
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup target add x86_64-unknown-linux-musl
+
+      - name: build project
+        run: cargo build --release --target x86_64-unknown-linux-musl
+
+      - name: create release tarball
+        run: |
+          tar zcf ${{ env.EXE_NAME }}-linux-x86_64-musl.tar.gz -C target/x86_64-unknown-linux-musl/release ${{ env.EXE_NAME }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-x86_64-binary
+          path: ${{ env.EXE_NAME }}-linux-x86_64-musl.tar.gz
+          if-no-files-found: error
+
+  publish-release:
+    needs: [build-macos-aarch64]
+    if: false
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: macos-aarch64-binary
+          path: /tmp
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: linux-x86_64-binary
+          path: /tmp
 
       - name: set version to version.current output variable
         id: version
-        run: echo "current=$(target/release/${{ env.EXE_NAME }} --version | head -n 1 | sed -E 's/[^0-9]+(.*)/\1/')" >> $GITHUB_OUTPUT
+        run: |
+          tar xf /tmp/${{ env.EXE_NAME }}-linux-x86_64-musl.tar.gz
+          echo "current=$(/tmp/${{ env.EXE_NAME }} --version | head -n 1 | sed -E 's/[^0-9]+(.*)/\1/')" >> $GITHUB_OUTPUT
 
       - name: set tag.value to tag for release
         id: tag
@@ -36,5 +84,5 @@ jobs:
           tag: ${{ steps.tag.outputs.value }}
           commit: "main"
           name: "${{ steps.tag.outputs.value }}"
-          artifacts: ${{ env.EXE_NAME }}_macos-aarch64.tar.gz
+          artifacts: /tmp/${{ env.EXE_NAME }}*
           artifactErrorsFailBuild: true
