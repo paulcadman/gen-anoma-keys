@@ -1,9 +1,5 @@
 on:
   workflow_dispatch:
-    inputs:
-      version:
-        description: "The version number to use"
-        required: true
 
 env:
   EXE_NAME: gen-anoma-keys
@@ -11,6 +7,8 @@ env:
 jobs:
   build:
     runs-on: macos-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -24,8 +22,19 @@ jobs:
         run: |
           tar zcf ${{ env.EXE_NAME }}_macos-aarch64.tar.gz -C target/release ${{ env.EXE_NAME }}
 
-      - uses: actions/upload-artifact@v4
+      - name: set version to version.current output variable
+        id: version
+        run: echo "current=$(target/release/${{ env.EXE_NAME }} --version | head -n 1 | sed -E 's/[^0-9]+(.*)/\1/')" >> $GITHUB_OUTPUT
+
+      - name: set tag.value to tag for release
+        id: tag
+        run: echo "value=v${{ steps.version.outputs.current }}" >> $GITHUB_OUTPUT
+
+      - name: Create release
+        uses: ncipollo/release-action@v1
         with:
-          name: macos-aarch64-binary
-          path: ${{ env.EXE_NAME }}_macos-aarch64.tar.gz
-          if-no-files-found: error
+          tag: ${{ steps.tag.outputs.value }}
+          commit: "main"
+          name: "${{ steps.tag.outputs.value }}"
+          artifacts: ${{ env.EXE_NAME }}_macos-aarch64.tar.gz
+          artifactErrorsFailBuild: true
