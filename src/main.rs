@@ -1,9 +1,14 @@
 use clap::Parser;
 use ed25519_dalek::SigningKey;
 use rand::rngs::OsRng;
+use shadow_rs::shadow;
+use crate::build::CLAP_LONG_VERSION;
+
+shadow!(build);
 
 #[derive(Parser)]
 #[command(name = "generate-anoma-keys")]
+#[clap(long_version = CLAP_LONG_VERSION)]
 #[command(about = "Generate ED25519 keys for use in an Anoma/Juvix program", long_about = None)]
 struct Args {
     /// Name of the constructor
