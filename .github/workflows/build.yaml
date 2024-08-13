@@ -52,8 +52,7 @@ jobs:
           if-no-files-found: error
 
   publish-release:
-    needs: [build-macos-aarch64]
-    if: false
+    needs: [build-macos-aarch64, build-linux-x86_64-musl]
     permissions:
       contents: write
     runs-on: ubuntu-latest
@@ -72,7 +71,7 @@ jobs:
         id: version
         run: |
           tar xf /tmp/${{ env.EXE_NAME }}-linux-x86_64-musl.tar.gz
-          echo "current=$(/tmp/${{ env.EXE_NAME }} --version | head -n 1 | sed -E 's/[^0-9]+(.*)/\1/')" >> $GITHUB_OUTPUT
+          echo "current=$(./${{ env.EXE_NAME }} --version | head -n 1 | sed -E 's/[^0-9]+(.*)/\1/')" >> $GITHUB_OUTPUT
 
       - name: set tag.value to tag for release
         id: tag
@@ -86,3 +85,4 @@ jobs:
           name: "${{ steps.tag.outputs.value }}"
           artifacts: /tmp/${{ env.EXE_NAME }}*
           artifactErrorsFailBuild: true
+          allow-updates: true
