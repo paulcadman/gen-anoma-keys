@@ -1,0 +1,31 @@
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "The version number to use"
+        required: true
+
+env:
+  EXE_NAME: gen-anoma-keys
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Rust
+        run: rustup toolchain install stable --profile minimal
+
+      - name: build project
+        run: cargo build --release
+
+      - name: create release tarball
+        run: |
+          tar zcf ${{ env.EXE_NAME }}_macos-aarch64.tar.gz -C target/release/${{ env.EXE_NAME }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos-aarch64-binary
+          path: ${{ env.EXE_NAME }}_macos-aarch64.tar.gz
+          if-no-files-found: error
