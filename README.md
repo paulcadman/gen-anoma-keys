@@ -39,5 +39,5 @@ Options:
       --constructor-name <CONSTRUCTOR_NAME>  Name of the constructor [default: mkByteArray]
       --type-name <TYPE_NAME>                Name of the type [default: ByteArray]
   -h, --help                                 Print help
+  -V, --version                              Print version
 ```
-
