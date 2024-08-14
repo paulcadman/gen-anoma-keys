@@ -6,7 +6,7 @@ A tool to generate ED25519 keys for use in an Anoma program.
 
 #### Prebuilt binaries
 
-Use the prebuilt binaries for macOS aarch64 and linux x86_64 from the [latest release](https://github.com/paulcadman/gen-anoma-keys/releases/latest).
+Use the prebuilt binaries for macOS-aarch64 and linux-x86_64 from the [latest release](https://github.com/paulcadman/gen-anoma-keys/releases/latest).
 
 #### Compile from source
 
