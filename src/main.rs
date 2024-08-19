@@ -11,13 +11,21 @@ shadow!(build);
 #[clap(long_version = CLAP_LONG_VERSION)]
 #[command(about = "Generate ED25519 keys for use in an Anoma/Juvix program", long_about = None)]
 struct Args {
-    /// Name of the constructor
-    #[arg(long, default_value = "mkByteArray")]
-    constructor_name: String,
+    /// Name of the PublicKey type
+    #[arg(long, default_value = "PublicKey")]
+    publickey_type_name: String,
 
-    /// Name of the type
-    #[arg(long, default_value = "ByteArray")]
-    type_name: String,
+    /// Name of the PublicKey constructor
+    #[arg(long, default_value = "PublicKey.mk")]
+    publickey_ctor_name: String,
+
+    /// Name of the PublicKey type
+    #[arg(long, default_value = "PrivateKey")]
+    privatekey_type_name: String,
+
+    /// Name of the PrivateKey constructor
+    #[arg(long, default_value = "PrivateKey.mk")]
+    privatekey_ctor_name: String,
 }
 
 fn format_bytes_juvix(input: &[u8]) -> String {
@@ -38,10 +46,10 @@ fn main() {
     let keypair_bytes = signing_key.to_keypair_bytes();
     let public_key_bytes = signing_key.verifying_key().to_bytes();
 
-    print!("privKey : {} := {} ", args.type_name, args.constructor_name);
+    print!("privKey : {} := {} ", args.privatekey_type_name, args.privatekey_ctor_name);
     print!("{}", format_bytes_juvix(&keypair_bytes));
     println!(";");
-    print!("pubKey : {}  := {} ", args.type_name, args.constructor_name);
+    print!("pubKey : {}  := {} ", args.publickey_type_name, args.publickey_ctor_name);
     print!("{}", format_bytes_juvix(&public_key_bytes));
     println!(";");
 }
