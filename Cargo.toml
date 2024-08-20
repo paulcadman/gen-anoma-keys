@@ -1,6 +1,6 @@
 [package]
 name = "gen-anoma-keys"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 build = "build.rs"
 
@@ -9,6 +9,7 @@ clap = { version = "4.5.15", features = ["derive"] }
 ed25519-dalek = { version = "2.1.1", features = ["rand_core"] }
 rand = "0.8.5"
 shadow-rs = "0.31.1"
+hex = "0.4.3"
 
 [build-dependencies]
 shadow-rs = "0.31.1"
